@@ -1,0 +1,180 @@
+{
+  "identifier": "oss_component_security",
+  "title": "OSS Component Security & Quality",
+  "icon": "Shield",
+  "description": "Evaluates the security posture and quality of an OSS component version based on Sonatype Guide intelligence: vulnerability severity, hygiene rating, and integrity rating.",
+  "blueprint": "sonatype_guide_package_version",
+  "levels": [
+    {
+      "color": "red",
+      "title": "Critical Risk"
+    },
+    {
+      "color": "orange",
+      "title": "High Risk"
+    },
+    {
+      "color": "yellow",
+      "title": "Moderate Risk"
+    },
+    {
+      "color": "blue",
+      "title": "Low Risk"
+    },
+    {
+      "color": "green",
+      "title": "Trusted"
+    }
+  ],
+  "rules": [
+    {
+      "identifier": "no_critical_vulns",
+      "title": "No Critical Vulnerabilities",
+      "description": "This component version has zero critical severity security issues",
+      "level": "High Risk",
+      "query": {
+        "combinator": "and",
+        "rules": [
+          {
+            "property": "criticalCount",
+            "operator": "=",
+            "value": 0
+          }
+        ]
+      }
+    },
+    {
+      "identifier": "no_high_vulns",
+      "title": "No High Vulnerabilities",
+      "description": "This component version has zero high severity security issues",
+      "level": "Moderate Risk",
+      "query": {
+        "combinator": "and",
+        "rules": [
+          {
+            "property": "highCount",
+            "operator": "=",
+            "value": 0
+          }
+        ]
+      }
+    },
+    {
+      "identifier": "hygiene_acceptable",
+      "title": "Acceptable Hygiene Rating",
+      "description": "Hygiene rating is Fair, Good, or Excellent — the component is actively maintained",
+      "level": "Moderate Risk",
+      "query": {
+        "combinator": "and",
+        "rules": [
+          {
+            "property": "hygieneRating",
+            "operator": "!=",
+            "value": "Poor"
+          }
+        ]
+      }
+    },
+    {
+      "identifier": "integrity_acceptable",
+      "title": "Acceptable Integrity Rating",
+      "description": "Integrity rating is Fair, Good, or Excellent — supply chain provenance is verifiable",
+      "level": "Low Risk",
+      "query": {
+        "combinator": "and",
+        "rules": [
+          {
+            "property": "integrityRating",
+            "operator": "!=",
+            "value": "Poor"
+          }
+        ]
+      }
+    },
+    {
+      "identifier": "hygiene_good_or_better",
+      "title": "Good or Excellent Hygiene",
+      "description": "Hygiene rating is Good or Excellent — strong maintenance signals",
+      "level": "Low Risk",
+      "query": {
+        "combinator": "or",
+        "rules": [
+          {
+            "property": "hygieneRating",
+            "operator": "=",
+            "value": "Good"
+          },
+          {
+            "property": "hygieneRating",
+            "operator": "=",
+            "value": "Excellent"
+          }
+        ]
+      }
+    },
+    {
+      "identifier": "no_medium_vulns",
+      "title": "No Medium Vulnerabilities",
+      "description": "This component version has zero medium severity security issues",
+      "level": "Low Risk",
+      "query": {
+        "combinator": "and",
+        "rules": [
+          {
+            "property": "mediumCount",
+            "operator": "=",
+            "value": 0
+          }
+        ]
+      }
+    },
+    {
+      "identifier": "exact_match",
+      "title": "Exact Component Match",
+      "description": "Sonatype Guide returned an exact match for this component (high confidence data)",
+      "level": "Trusted",
+      "query": {
+        "combinator": "and",
+        "rules": [
+          {
+            "property": "matchState",
+            "operator": "=",
+            "value": "exact"
+          }
+        ]
+      }
+    },
+    {
+      "identifier": "integrity_excellent",
+      "title": "Excellent Integrity Rating",
+      "description": "Component has excellent supply chain integrity — signed, provenance verified",
+      "level": "Trusted",
+      "query": {
+        "combinator": "and",
+        "rules": [
+          {
+            "property": "integrityRating",
+            "operator": "=",
+            "value": "Excellent"
+          }
+        ]
+      }
+    },
+    {
+      "identifier": "hygiene_excellent",
+      "title": "Excellent Hygiene Rating",
+      "description": "Component shows excellent maintenance health",
+      "level": "Trusted",
+      "query": {
+        "combinator": "and",
+        "rules": [
+          {
+            "property": "hygieneRating",
+            "operator": "=",
+            "value": "Excellent"
+          }
+        ]
+      }
+    }
+  ]
+}

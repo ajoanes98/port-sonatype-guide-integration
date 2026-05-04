@@ -1,0 +1,189 @@
+{
+  "identifier": "sonatype_guide_package_version",
+  "title": "OSS Package Version",
+  "icon": "Package",
+  "description": "A specific version of an open source package, enriched with Sonatype Guide security, license, and quality intelligence.",
+  "schema": {
+    "properties": {
+      "packageUrl": {
+        "title": "Package URL (purl)",
+        "type": "string",
+        "description": "Full package URL including version, e.g. pkg:maven/org.apache.struts/struts2-core@2.5.10"
+      },
+      "version": {
+        "title": "Version",
+        "type": "string",
+        "description": "The version string for this component"
+      },
+      "ecosystem": {
+        "title": "Ecosystem",
+        "type": "string",
+        "enum": ["maven", "npm", "pypi", "golang", "nuget", "gem", "cargo", "composer", "conan", "conda"],
+        "enumColors": {
+          "maven": "orange",
+          "npm": "red",
+          "pypi": "blue",
+          "golang": "paleBlue",
+          "nuget": "purple",
+          "gem": "pink",
+          "cargo": "brown",
+          "composer": "green",
+          "conan": "lightGray",
+          "conda": "yellow"
+        }
+      },
+      "displayName": {
+        "title": "Display Name",
+        "type": "string",
+        "description": "Human-readable name as returned by Sonatype Guide"
+      },
+      "hygieneRating": {
+        "title": "Hygiene Rating",
+        "type": "string",
+        "enum": ["Excellent", "Good", "Fair", "Poor"],
+        "enumColors": {
+          "Excellent": "green",
+          "Good": "blue",
+          "Fair": "yellow",
+          "Poor": "red"
+        },
+        "description": "Sonatype's assessment of the component's maintenance and health (release cadence, community activity, etc.)"
+      },
+      "integrityRating": {
+        "title": "Integrity Rating",
+        "type": "string",
+        "enum": ["Excellent", "Good", "Fair", "Poor"],
+        "enumColors": {
+          "Excellent": "green",
+          "Good": "blue",
+          "Fair": "yellow",
+          "Poor": "red"
+        },
+        "description": "Sonatype's assessment of component integrity (signing, provenance, supply chain trust)"
+      },
+      "relativePopularity": {
+        "title": "Relative Popularity",
+        "type": "number",
+        "description": "Popularity score (0-100) relative to other packages in the same ecosystem"
+      },
+      "effectiveLicense": {
+        "title": "Effective License",
+        "type": "string",
+        "description": "The effective SPDX license identifier for this version (e.g. Apache-2.0, MIT)"
+      },
+      "catalogDate": {
+        "title": "Catalog Date",
+        "type": "string",
+        "format": "date-time",
+        "description": "The date Sonatype first cataloged this version"
+      },
+      "matchState": {
+        "title": "Match State",
+        "type": "string",
+        "enum": ["exact", "similar", "unknown"],
+        "enumColors": {
+          "exact": "green",
+          "similar": "yellow",
+          "unknown": "lightGray"
+        },
+        "description": "How accurately Sonatype Guide matched this component"
+      },
+      "securityIssueCount": {
+        "title": "Total Security Issues",
+        "type": "number",
+        "description": "Total number of open security vulnerabilities for this version"
+      },
+      "criticalCount": {
+        "title": "Critical Vulnerabilities",
+        "type": "number",
+        "description": "Number of CRITICAL severity security issues"
+      },
+      "highCount": {
+        "title": "High Vulnerabilities",
+        "type": "number",
+        "description": "Number of HIGH severity security issues"
+      },
+      "mediumCount": {
+        "title": "Medium Vulnerabilities",
+        "type": "number",
+        "description": "Number of MEDIUM severity security issues"
+      },
+      "lowCount": {
+        "title": "Low Vulnerabilities",
+        "type": "number",
+        "description": "Number of LOW severity security issues"
+      },
+      "maxCvssScore": {
+        "title": "Max CVSS Score",
+        "type": "number",
+        "description": "Highest CVSS threat score across all security issues for this version"
+      },
+      "vulnerabilitySummary": {
+        "title": "Vulnerability Summary",
+        "type": "string",
+        "format": "markdown",
+        "description": "Markdown-formatted summary of open vulnerabilities (CVE ID, severity, CVSS score)"
+      },
+      "guideUrl": {
+        "title": "Sonatype Guide URL",
+        "type": "string",
+        "format": "url",
+        "description": "Direct link to this component version on Sonatype Guide"
+      },
+      "lastSyncedAt": {
+        "title": "Last Synced",
+        "type": "string",
+        "format": "date-time",
+        "description": "When this entity was last refreshed from Sonatype Guide"
+      }
+    },
+    "required": ["packageUrl", "version", "ecosystem"]
+  },
+  "mirrorProperties": {
+    "packageBasePurl": {
+      "title": "Base Package URL",
+      "path": "package.$identifier"
+    },
+    "packageNamespace": {
+      "title": "Package Namespace",
+      "path": "package.namespace"
+    }
+  },
+  "calculationProperties": {
+    "securityPosture": {
+      "title": "Security Posture",
+      "type": "string",
+      "colorized": true,
+      "colors": {
+        "Clean": "green",
+        "Low Risk": "blue",
+        "Medium Risk": "yellow",
+        "High Risk": "orange",
+        "Critical Risk": "red"
+      },
+      "calculation": "if .properties.criticalCount > 0 then \"Critical Risk\" elif .properties.highCount > 0 then \"High Risk\" elif .properties.mediumCount > 0 then \"Medium Risk\" elif .properties.lowCount > 0 then \"Low Risk\" else \"Clean\" end"
+    },
+    "qualityScore": {
+      "title": "Overall Quality Score",
+      "type": "string",
+      "colorized": true,
+      "colors": {
+        "Excellent": "green",
+        "Good": "blue",
+        "Fair": "yellow",
+        "Poor": "red"
+      },
+      "calculation": "if (.properties.hygieneRating == \"Excellent\" and .properties.integrityRating == \"Excellent\") then \"Excellent\" elif (.properties.hygieneRating == \"Poor\" or .properties.integrityRating == \"Poor\") then \"Poor\" elif (.properties.hygieneRating == \"Good\" and (.properties.integrityRating == \"Good\" or .properties.integrityRating == \"Excellent\")) then \"Good\" else \"Fair\" end"
+    }
+  },
+  "aggregationProperties": {},
+  "relations": {
+    "package": {
+      "title": "OSS Package",
+      "target": "sonatype_guide_package",
+      "required": true,
+      "many": false,
+      "description": "The parent package this version belongs to"
+    }
+  }
+}

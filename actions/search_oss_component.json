@@ -1,0 +1,50 @@
+{
+  "identifier": "search_oss_component",
+  "title": "Search OSS Component",
+  "icon": "Search",
+  "description": "Look up an open source component on Sonatype Guide by package URL (purl). Creates or updates the component version entity in Port with the latest intelligence data.",
+  "trigger": {
+    "type": "self-service",
+    "operation": "CREATE",
+    "userInputs": {
+      "properties": {
+        "packageUrl": {
+          "title": "Package URL (purl)",
+          "description": "The full package URL for the component version you want to research. Format: pkg:{ecosystem}/{namespace}/{name}@{version}. Examples: pkg:maven/org.apache.struts/struts2-core@2.5.10, pkg:npm/lodash@4.17.20, pkg:pypi/requests@2.31.0",
+          "type": "string",
+          "pattern": "^pkg:[a-z]+\\/.*@.+$"
+        },
+        "fetchRemediation": {
+          "title": "Fetch Remediation Recommendation",
+          "description": "Also retrieve Sonatype Guide's recommended safe upgrade path for this component.",
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": ["packageUrl"],
+      "order": ["packageUrl", "fetchRemediation"]
+    },
+    "blueprintIdentifier": "sonatype_guide_package_version"
+  },
+  "invocationMethod": {
+    "type": "WEBHOOK",
+    "url": "{{ secrets.SONATYPE_GUIDE_WEBHOOK_URL }}",
+    "agent": false,
+    "synchronized": true,
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Port-Action": "search_oss_component"
+    },
+    "body": {
+      "packageUrl": "{{ .inputs.packageUrl }}",
+      "fetchRemediation": "{{ .inputs.fetchRemediation }}",
+      "portContext": {
+        "runId": "{{ .run.id }}",
+        "triggeredBy": "{{ .trigger.by.user.email }}",
+        "blueprintIdentifier": "sonatype_guide_package_version"
+      }
+    }
+  },
+  "requiredApproval": false
+}

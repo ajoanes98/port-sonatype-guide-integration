@@ -1,0 +1,118 @@
+{
+  "identifier": "sonatype_guide_remediation",
+  "title": "OSS Remediation Recommendation",
+  "icon": "Shield",
+  "description": "A Sonatype Guide remediation recommendation — the safest upgrade path from a vulnerable component version.",
+  "schema": {
+    "properties": {
+      "fromPackageUrl": {
+        "title": "From Package URL",
+        "type": "string",
+        "description": "The purl of the component version being remediated (the vulnerable version)"
+      },
+      "fromVersion": {
+        "title": "From Version",
+        "type": "string",
+        "description": "The version being remediated"
+      },
+      "recommendedPackageUrl": {
+        "title": "Recommended Package URL",
+        "type": "string",
+        "description": "The purl of the recommended safe version to upgrade to"
+      },
+      "recommendedVersion": {
+        "title": "Recommended Version",
+        "type": "string",
+        "description": "The version Sonatype Guide recommends upgrading to"
+      },
+      "remediationType": {
+        "title": "Remediation Type",
+        "type": "string",
+        "enum": ["next-non-failing", "next-no-violations", "recommended"],
+        "enumColors": {
+          "next-non-failing": "blue",
+          "next-no-violations": "green",
+          "recommended": "purple"
+        },
+        "description": "The type of remediation recommendation from Sonatype Guide"
+      },
+      "reasons": {
+        "title": "Reason(s)",
+        "type": "string",
+        "format": "markdown",
+        "description": "Sonatype Guide's explanation for why this version is recommended"
+      },
+      "recommendedHygieneRating": {
+        "title": "Recommended Version Hygiene",
+        "type": "string",
+        "enum": ["Excellent", "Good", "Fair", "Poor"],
+        "enumColors": {
+          "Excellent": "green",
+          "Good": "blue",
+          "Fair": "yellow",
+          "Poor": "red"
+        }
+      },
+      "recommendedIntegrityRating": {
+        "title": "Recommended Version Integrity",
+        "type": "string",
+        "enum": ["Excellent", "Good", "Fair", "Poor"],
+        "enumColors": {
+          "Excellent": "green",
+          "Good": "blue",
+          "Fair": "yellow",
+          "Poor": "red"
+        }
+      },
+      "recommendedVulnCount": {
+        "title": "Vulns in Recommended Version",
+        "type": "number",
+        "description": "Number of open security issues in the recommended version (should be 0 or near 0)"
+      },
+      "guideRemediationUrl": {
+        "title": "Guide Remediation URL",
+        "type": "string",
+        "format": "url",
+        "description": "Link to the recommended component version on Sonatype Guide"
+      },
+      "fetchedAt": {
+        "title": "Fetched At",
+        "type": "string",
+        "format": "date-time",
+        "description": "When this remediation recommendation was last retrieved from Sonatype Guide"
+      }
+    },
+    "required": ["fromPackageUrl", "recommendedPackageUrl", "remediationType"]
+  },
+  "mirrorProperties": {
+    "sourceCriticalCount": {
+      "title": "Source Critical Vulns",
+      "path": "sourceVersion.criticalCount"
+    },
+    "sourceHighCount": {
+      "title": "Source High Vulns",
+      "path": "sourceVersion.highCount"
+    },
+    "sourceHygieneRating": {
+      "title": "Source Hygiene",
+      "path": "sourceVersion.hygieneRating"
+    }
+  },
+  "calculationProperties": {
+    "upgradeDistance": {
+      "title": "Upgrade Summary",
+      "type": "string",
+      "calculation": "\"Upgrade from \" + (.properties.fromVersion // \"unknown\") + \" → \" + (.properties.recommendedVersion // \"unknown\")"
+    }
+  },
+  "aggregationProperties": {},
+  "relations": {
+    "sourceVersion": {
+      "title": "Vulnerable Version",
+      "target": "sonatype_guide_package_version",
+      "required": true,
+      "many": false,
+      "description": "The package version this remediation applies to"
+    }
+  }
+}

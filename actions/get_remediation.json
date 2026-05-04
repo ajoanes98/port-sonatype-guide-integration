@@ -1,0 +1,56 @@
+{
+  "identifier": "get_oss_remediation",
+  "title": "Get Remediation Recommendation",
+  "icon": "Shield",
+  "description": "Fetch Sonatype Guide's recommended safe upgrade path for this component version. Creates or updates a Remediation entity linked to this version.",
+  "trigger": {
+    "type": "self-service",
+    "operation": "DAY-2",
+    "userInputs": {
+      "properties": {
+        "confirmFetch": {
+          "title": "Fetch latest recommendation",
+          "description": "This will call the Sonatype Guide remediation API and create/update a Remediation entity linked to this component version.",
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [],
+      "order": ["confirmFetch"]
+    },
+    "blueprintIdentifier": "sonatype_guide_package_version",
+    "condition": {
+      "type": "SEARCH",
+      "combinator": "and",
+      "rules": [
+        {
+          "property": "securityIssueCount",
+          "operator": ">",
+          "value": 0
+        }
+      ]
+    }
+  },
+  "invocationMethod": {
+    "type": "WEBHOOK",
+    "url": "{{ secrets.SONATYPE_GUIDE_WEBHOOK_URL }}",
+    "agent": false,
+    "synchronized": true,
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Port-Action": "get_remediation"
+    },
+    "body": {
+      "packageUrl": "{{ .entity.properties.packageUrl }}",
+      "entityIdentifier": "{{ .entity.identifier }}",
+      "portContext": {
+        "runId": "{{ .run.id }}",
+        "triggeredBy": "{{ .trigger.by.user.email }}",
+        "blueprintIdentifier": "sonatype_guide_package_version",
+        "entityIdentifier": "{{ .entity.identifier }}"
+      }
+    }
+  },
+  "requiredApproval": false
+}

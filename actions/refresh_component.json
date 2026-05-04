@@ -1,0 +1,54 @@
+{
+  "identifier": "refresh_oss_component",
+  "title": "Refresh Component Data",
+  "icon": "Sync",
+  "description": "Re-fetch the latest intelligence data from Sonatype Guide for this component version. Use this to pull in new vulnerability disclosures without waiting for the next scheduled sync.",
+  "trigger": {
+    "type": "self-service",
+    "operation": "DAY-2",
+    "userInputs": {
+      "properties": {},
+      "required": [],
+      "order": []
+    },
+    "blueprintIdentifier": "sonatype_guide_package_version"
+  },
+  "invocationMethod": {
+    "type": "WEBHOOK",
+    "url": "{{ secrets.SONATYPE_GUIDE_WEBHOOK_URL }}",
+    "agent": false,
+    "synchronized": true,
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json",
+      "X-Port-Action": "refresh_component"
+    },
+    "body": {
+      "packageUrl": "{{ .entity.properties.packageUrl }}",
+      "entityIdentifier": "{{ .entity.identifier }}",
+      "fetchRemediation": true,
+      "portContext": {
+        "runId": "{{ .run.id }}",
+        "triggeredBy": "{{ .trigger.by.user.email }}",
+        "blueprintIdentifier": "sonatype_guide_package_version",
+        "entityIdentifier": "{{ .entity.identifier }}"
+      }
+    }
+  },
+  "requiredApproval": false,
+  "publish": true,
+  "logMessages": [
+    {
+      "status": "IN_PROGRESS",
+      "message": "Refreshing {{ .entity.title }} from Sonatype Guide..."
+    },
+    {
+      "status": "SUCCESS",
+      "message": "{{ .entity.title }} data refreshed. Security posture and ratings updated."
+    },
+    {
+      "status": "FAILURE",
+      "message": "Failed to refresh component data. Sonatype Guide API may be unavailable."
+    }
+  ]
+}

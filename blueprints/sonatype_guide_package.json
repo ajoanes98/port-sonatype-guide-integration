@@ -1,0 +1,108 @@
+{
+  "identifier": "sonatype_guide_package",
+  "title": "OSS Package",
+  "icon": "Package",
+  "description": "An open source package tracked via Sonatype Guide. Represents the package at the top level (ecosystem + name), independent of version.",
+  "schema": {
+    "properties": {
+      "ecosystem": {
+        "title": "Ecosystem",
+        "type": "string",
+        "enum": ["maven", "npm", "pypi", "golang", "nuget", "gem", "cargo", "composer", "conan", "conda"],
+        "enumColors": {
+          "maven": "orange",
+          "npm": "red",
+          "pypi": "blue",
+          "golang": "lightBlue",
+          "nuget": "purple",
+          "gem": "pink",
+          "cargo": "brown",
+          "composer": "green",
+          "conan": "grey",
+          "conda": "yellow"
+        },
+        "description": "The package ecosystem / format (e.g. maven, npm, pypi)"
+      },
+      "name": {
+        "title": "Package Name",
+        "type": "string",
+        "description": "The artifact/package name without namespace"
+      },
+      "namespace": {
+        "title": "Namespace",
+        "type": "string",
+        "description": "Group ID, scope, or namespace (e.g. org.apache.struts, @angular)"
+      },
+      "basePurl": {
+        "title": "Base Package URL",
+        "type": "string",
+        "description": "The package URL (purl) without a version qualifier, e.g. pkg:maven/org.apache.struts/struts2-core"
+      },
+      "guideUrl": {
+        "title": "Sonatype Guide URL",
+        "type": "string",
+        "format": "url",
+        "description": "Direct link to this package's page on Sonatype Guide"
+      },
+      "latestTrackedVersion": {
+        "title": "Latest Tracked Version",
+        "type": "string",
+        "description": "The most recent version of this package being tracked in Port"
+      },
+      "totalVersionsTracked": {
+        "title": "Versions Tracked",
+        "type": "number",
+        "description": "Number of versions of this package currently tracked in Port"
+      }
+    },
+    "required": ["ecosystem", "name", "basePurl"]
+  },
+  "mirrorProperties": {},
+  "calculationProperties": {},
+  "aggregationProperties": {
+    "criticalVulnVersions": {
+      "title": "Versions with Critical Vulns",
+      "type": "number",
+      "target": "sonatype_guide_package_version",
+      "calculationSpec": {
+        "calculationBy": "entities",
+        "func": "count",
+        "filter": {
+          "combinator": "and",
+          "rules": [
+            {
+              "property": "criticalCount",
+              "operator": ">",
+              "value": 0
+            }
+          ]
+        }
+      }
+    },
+    "safeVersionCount": {
+      "title": "Safe Versions",
+      "type": "number",
+      "target": "sonatype_guide_package_version",
+      "calculationSpec": {
+        "calculationBy": "entities",
+        "func": "count",
+        "filter": {
+          "combinator": "and",
+          "rules": [
+            {
+              "property": "criticalCount",
+              "operator": "=",
+              "value": 0
+            },
+            {
+              "property": "highCount",
+              "operator": "=",
+              "value": 0
+            }
+          ]
+        }
+      }
+    }
+  },
+  "relations": {}
+}
